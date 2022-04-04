@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+
+
+  flask:
+    image: 127.0.0.1:5000/teststack
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - flask_volume:/app/code
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - poems_network
+
+
+  redis:
+    image: "redis:alpine"
+    volumes:
+      - redis_volume:/app/storage
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+          - node.labels.name == worker1
+    networks:
+      - poems_network
+
+
+
+volumes:
+  flask_volume:
+  redis_volume:
+
+
+networks:
+  poems_network:
+    external: true
